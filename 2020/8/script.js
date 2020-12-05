@@ -1072,7 +1072,6 @@ function func() {
     var passArray = [];
 
     var mustHaveFields = ["ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt"]
-    mustHaveFields.sort();
 
     var text = "";
 
@@ -1097,19 +1096,62 @@ function func() {
         var fields = passport.split(" ");
         var fieldNames = [];
 
-        fields.forEach(field => {
-            fieldName = field.split(":")[0];
-            fieldvalue = field.split(":")[1];
-            
+        for(var i = 0; i < fields.length; i++)
+        {
+            var fieldName = fields[i].split(":")[0];
+            var fieldValue = fields[i].split(":")[1];
+
+            switch(fieldName)
+            {
+                case "byr":
+                    if(fieldValue.length != 4 || parseInt(fieldValue) < 1920 || parseInt(fieldValue) > 2002)
+                        return;
+                    break;
+                case "iyr":
+                    if(fieldValue.length != 4 || parseInt(fieldValue) < 2010 || parseInt(fieldValue) > 2020)
+                        return;
+                    break;
+                case "eyr":
+                    if(fieldValue.length != 4 || parseInt(fieldValue) < 2020 || parseInt(fieldValue) > 2030)
+                        return;
+                    break;
+                case "hgt":
+                    if(fieldValue.includes("cm"))
+                    {
+                        if(isNaN(fieldValue.split("c")[0]))
+                            return;
+                    }
+                    else if(fieldValue.includes("in"))
+                    {
+                        if(isNaN(fieldValue.split("i")[0]))
+                            return;
+                    }
+                    else
+                        return;
+                    break;
+                case "hcl":
+                    const regex = /^#(\d|[a-z]){6}$/g;
+                    if(!regex.test(fieldValue))
+                        return;
+                    break;
+                case "ecl":
+                    if(!(fieldValue == "amb" || fieldValue == "blu" || fieldValue == "brn" || fieldValue == "gry" || fieldValue == "grn" || fieldValue == "hzl" || fieldValue == "oth"))
+                        return;
+                    break;
+                case "pid":
+                    const regex2 = /^\d{9}$/g;
+                    if(!regex2.test(fieldValue))
+                        return;
+                    break;
+            }
+
             fieldNames.push(fieldName);
-        });
-        
-        console.log(fieldNames)
+        }
 
         for(var i = 0; i < mustHaveFields.length; i++)
         {
             if(!fieldNames.includes(mustHaveFields[i]))
-                break;
+                return;
             else if(i == mustHaveFields.length - 1)
                 count++;
         }

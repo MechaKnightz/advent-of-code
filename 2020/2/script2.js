@@ -20,13 +20,15 @@ fs.readFile('./data', 'utf8', function (err, data) {
         lower = parseInt(numbers.split("-")[0]);
         upper = parseInt(numbers.split("-")[1]);
 
-        var count = 0;
-        for (var i = 0; i < password.length; i++) {
-            if (password.charAt(i) == letter)
-                count++;
-        }
+        count = 0;
 
-        if (count >= lower && count <= upper)
+        if (password[lower - 1] == letter)
+            count++;
+
+        if (password[upper - 1] == letter)
+            count++;
+
+        if (count == 1)
             answer++;
     });
 

@@ -6,6 +6,7 @@ fs.readFile('./data', 'utf8', function (err, data) {
     data = data.replace(/\r/g, "");
     var dataArray = data.split("\n");
     var answer = 0;
+    var seats = [];
 
     for (let i = 0; i < dataArray.length; i++) {
         let currentRow = dataArray[i];
@@ -50,9 +51,44 @@ fs.readFile('./data', 'utf8', function (err, data) {
 
         let seatId = row * 8 + column;
 
-        if (seatId > answer)
-            answer = seatId;
+        seats.push({ row, column, seatId })
+    }
+
+    var empty = [];
+
+    for (let i = 0; i < 128; i++) {
+        for (let j = 0; j < 8; j++) {
+
+            if (seatAtRow(seats, i, j) == null) {
+                empty.push({ row: i, column: j });
+                let thisSeatId = i * 8 + j;
+
+                let prevSeatExists = false;
+                seats.forEach(seat => {
+                    if (seat.seatId == thisSeatId - 1)
+                        prevSeatExists = true;
+                });
+                let nextSeatExists = false;
+                seats.forEach(seat => {
+                    if (seat.seatId == thisSeatId + 1)
+                        nextSeatExists = true;
+                });
+
+                if (prevSeatExists && nextSeatExists)
+                    answer = thisSeatId;
+            }
+        }
     }
 
     console.log(answer);
 });
+
+function seatAtRow(seats, row, column) {
+    for (let k = 0; k < seats.length; k++) {
+        if (row == seats[k].row && column == seats[k].column)
+            return seats[k];
+        if (k == seats.length - 1) {
+            return null;
+        }
+    }
+}

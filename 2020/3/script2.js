@@ -9,7 +9,7 @@ fs.readFile('./data', 'utf8', function (err, data) {
     var answer = 1;
     var width = array[0].length;
 
-    var slopeArray = [[3, 1]]
+    var slopeArray = [[1, 1], [3, 1], [5, 1], [7, 1], [1, 2]]
     var answerArray = []
 
     slopeArray.forEach(element => {

@@ -13,8 +13,10 @@ fs.readFile('./data', 'utf8', function (err, data) {
 
     array.forEach(outer => {
         array.forEach(inner => {
-            if(outer + inner == 2020)
-                answer = outer * inner;
+            array.forEach(innerest => {
+                if(outer + inner + innerest == 2020)
+                answer = outer * inner * innerest;
+            });
         });
     });
     console.log(answer);

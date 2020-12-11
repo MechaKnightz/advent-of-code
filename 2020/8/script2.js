@@ -2,7 +2,7 @@ const { match } = require('assert');
 const { parse } = require('path');
 
 fs = require('fs')
-fs.readFile('./data', 'utf8', function (err, data) {
+fs.readFile('./data2', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
@@ -10,36 +10,45 @@ fs.readFile('./data', 'utf8', function (err, data) {
     var dataArray = data.split("\n");
     var answer = 0;
 
-    var parsedData = new Map();
+    let lines = dataArray.map(element => {
+        return { instruction: element.match(/.*(?= )/g)[0], value: parseInt(element.match(/(?= ).*/g)[0]) }
+    });
 
-    for (let i = 0; i < dataArray.length; i++) {
-        let color = dataArray[i].match(/^[a-z ]*(?= bags contain)/g)[0];
-        let children = dataArray[i].match(/(?<=[0-9] )[a-z ]*(?= bag)/g);
-        let counts = dataArray[i].match(/\d/g);
+    let linesRun = [];
+    var accumulator = 0;
+    let exeLoc = 0;
 
+    let prevExec;
 
-        var countedChildren = null;
-        if (children !== null)
-            countedChildren = children.map((child, i) => {
+    for (; exeLoc < lines.length;) {
+        if(linesRun.includes(exeLoc)) {
+            if(repetition.includes(exeLoc)) {
+                answer = repetition;
+                break;
+            }
+            repetition.push(exeLoc);
+        }
+        else {
+            repetition = [];
+        }
 
-                return { name: child, amount: parseInt(counts[i]) };
-            });
+        linesRun.push(exeLoc);
 
-        parsedData.set(color, countedChildren);
+        switch (lines[exeLoc].instruction) {
+            case "acc":
+                accumulator += lines[exeLoc].value
+                exeLoc++;
+                break;
+            case "jmp":
+                exeLoc += lines[exeLoc].value;
+                break;
+            case "nop":
+                exeLoc++;
+                break;
+        }
+
     }
 
-    answer = recursiveCheck(parsedData.get("shiny gold"), parsedData, 1, 0);
-
-    //-1 because you don't want to count the main mag
-    console.log(answer - 1);
+    console.dir(answer, {'maxArrayLength': null})
+    //console.log(answer);
 });
-
-function recursiveCheck(children, dictionary, amount, count) {
-
-    if (children != null)
-        for (const child of children) {
-            count = recursiveCheck(dictionary.get(child.name), dictionary, amount * child.amount, count);
-        }
-    count += amount;
-    return count;
-}
